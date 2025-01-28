@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-// import Header from "@/components/header"
 
 
 
@@ -15,7 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <>
-        {/* <Header/> */}
+       
         {children}
     </>
   );
