@@ -1,11 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/utils/supabase/server";
+import { NextResponse } from "next/server";
+import { clearAuthCookies, createClient } from "@/utils/supabase/server";
 
-export async function POST(request: NextRequest) {
-    const url = new URL(request.url)
+export async function POST() {
     const supabase = await createClient();
-    supabase.auth.signOut();
-    return NextResponse.redirect(url.origin, {
-        status: 301
-    })
+    await supabase.auth.signOut();
+    clearAuthCookies();
+    return NextResponse.json({redirect: "/sign-in"})
 }
