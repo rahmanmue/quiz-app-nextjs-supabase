@@ -53,6 +53,9 @@ export async function signUp(data: SignUp) {
 export async function logout() {
     try {
         const response = await fetch('/api/auth/logout', {
+            headers: { 
+                "Content-Type": "application/json" 
+            },
             method: 'POST'
         });
 

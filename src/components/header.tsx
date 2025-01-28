@@ -23,14 +23,14 @@ export default function Header(){
   const router = useRouter();
 
   const handleLogout = async () => {
-      const {data, error} = await logout();
+      const {error} = await logout();
      
       if (error) {
           console.error("Logout failed with status:", error);
           return
       } 
 
-      router.push(data.redirect)
+      router.push("/sign-in")
   };
 
   // const fetchSession = async () => {

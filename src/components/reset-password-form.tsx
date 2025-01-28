@@ -29,7 +29,7 @@ export function ResetPasswordForm({onSuccess} : propsResetPassword){
             return
         }
 
-        onSuccess(res.data?.redirect);
+        onSuccess("/sign-in");
         
         toast({
             title: "Success",

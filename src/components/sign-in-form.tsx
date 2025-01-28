@@ -9,13 +9,15 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { signIn } from "@/utils/api";
+import { ModalForgotPassword } from "./modal-forgot-password";
 
 interface SignInFormProps {
     initialState: { email: string; password: string };
     onSuccess: () => void;
-  }
+}
 
 export function SignInForm({initialState, onSuccess} : SignInFormProps ){
+    
 
     const [dataUser, setDataUser] = useState<SignIn>(initialState);
     const [errMsg, setErrMsg] = useState<string>('');
@@ -28,7 +30,7 @@ export function SignInForm({initialState, onSuccess} : SignInFormProps ){
 
         try {
             const response = await signIn(dataUser);
-           
+        
             if (!response.ok) {
                 throw new Error(response.error || "Login failed. Please try again.");
             }
@@ -82,8 +84,9 @@ export function SignInForm({initialState, onSuccess} : SignInFormProps ){
                                     type="password"
                                     required
                                 />
+                                <ModalForgotPassword />
                             </div>
-                           
+                        
                             <Button type="submit" className="w-full">
                                 {loading ? 'Login ...' : 'Login'}
                             </Button>
