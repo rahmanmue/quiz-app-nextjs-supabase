@@ -4,11 +4,7 @@ import { type NextRequest, NextResponse } from "next/server";
 export const updateSession = async (request: NextRequest) => {
   try {
     // Create an unmodified response
-    let response = NextResponse.next({
-      request: {
-        headers: request.headers,
-      },
-    });
+    const response = NextResponse.next();
 
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -19,17 +15,13 @@ export const updateSession = async (request: NextRequest) => {
             return request.cookies.getAll();
           },
           setAll(cookiesToSet) {
-            cookiesToSet.forEach(({ name, value }) =>
-              request.cookies.set(name, value),
-            );
-            response = NextResponse.next({
-              request,
-            });
             cookiesToSet.forEach(({ name, value, options }) => {
-              options.httpOnly = true;
-              options.secure = process.env.NODE_ENV === "production";
-              response.cookies.set(name, value, options);
-              return response;
+              response.cookies.set(name, value, {
+                ...options,
+                httpOnly : true,
+                secure : process.env.NODE_ENV === "production",
+                sameSite: "strict"
+              });
             });
           },
         },
@@ -38,32 +30,26 @@ export const updateSession = async (request: NextRequest) => {
 
     // This will refresh session if expired - required for Server Components
     // https://supabase.com/docs/guides/auth/server-side/nextjs
-    const  { data: {user}, error } = await supabase.auth.getUser();
-
+    const  { data: {user} } = await supabase.auth.getUser();
+     
     const { pathname } = request.nextUrl;
-    console.log(user)
-    console.log(error)
-    console.log(pathname)
-    if(pathname == "/sign-in" && !error){
-      return NextResponse.redirect(new URL("/protected", request.url));
-    }
 
     // protected routes
-    if (pathname.startsWith("/protected") && error) {
+    if (pathname.startsWith("/protected") && !user) {
       return NextResponse.redirect(new URL("/sign-in", request.url));
     }
 
+    if(pathname == "/sign-in" && user){
+      return NextResponse.redirect(new URL("/protected", request.url));
+    }
 
+  
     return response;
   } catch (e) {
     // If you are here, a Supabase client could not be created!
     // This is likely because you have not set up environment variables.
     // Check out http://localhost:3000 for Next Steps.
     console.error("Middleware error: ",e)
-    return NextResponse.next({
-      request: {
-        headers: request.headers,
-      },
-    });
+    return NextResponse.next();
   }
 };

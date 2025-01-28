@@ -15,8 +15,13 @@ export const createClient = async () => {
         setAll(cookiesToSet) {
           try {
             cookiesToSet.forEach(({ name, value, options }) => {
-              options.httpOnly = true;
-              options.secure = process.env.NODE_ENV === "production";
+              options = {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "lax", // Untuk keamanan cookies
+                path: "/",
+                ...options, // Override jika ada opsi lain
+              };
               cookieStore.set(name, value, options);
             });
           } catch (error) {
@@ -30,3 +35,29 @@ export const createClient = async () => {
     },
   );
 };
+
+
+export const clearAuthCookies = () => {
+  const cookieStore = cookies();
+
+  try {
+    // Hapus cookies yang terkait dengan session Supabase
+    cookieStore.set("supabase-auth-token", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: -1, // Menghapus cookies
+    });
+    cookieStore.set("supabase-refresh-token", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: -1, // Menghapus cookies
+    });
+    
+  } catch (error) {
+    console.error("Error clearing auth cookies: ", error);
+  }
+}
