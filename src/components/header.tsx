@@ -5,10 +5,11 @@ import { NavigationMenu, NavigationMenuItem, NavigationMenuList } from "@/compon
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { logout } from "@/utils/api";
-import { createClient } from "@/utils/supabase/client";
+// import { createClient } from "@/utils/supabase/client";
+import { useUser } from "@/hooks/useUser";
 
 const navbarList = [
     {href: "/quizzers", label: "Quizzers"},
@@ -17,54 +18,41 @@ const navbarList = [
 ]
 
 export default function Header(){
-  const [open, setOpen] = useState<boolean>(false)
-  const [session, setSession] = useState<unknown>(null);
-
   const router = useRouter();
+  const [open, setOpen] = useState<boolean>(false)
+  const {isAuthenticated} = useUser();
 
   const handleLogout = async () => {
-      const {error} = await logout();
+      const {error, data} = await logout();
      
       if (error) {
           console.error("Logout failed with status:", error);
           return
       } 
 
-      router.push("/sign-in")
+      return router.push(data.redirect)
   };
 
-  // const fetchSession = async () => {
-  //   try {
-  //     const res = await fetch("/api/session");
-  //     if (res.status === 200) {
-  //       const data = await res.json();
-  //       setSession(data.session);
-  //     } else {
-  //       setSession(null);
-  //     }
-  //   } catch (error) {
-  //     console.error("Failed to fetch session:", error);
-  //     setSession(null);
-  //   }
-  // }
+ 
+ 
+  // const [session, setSession] = useState<unknown>(null);
+  // useEffect(() => {
+  //   const supabase = createClient();
 
-  useEffect(() => {
-    const supabase = createClient();
+  //   // Real-time session updates
+  //   const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+  //     setSession(session);
+  //   });
 
-    // Real-time session updates
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
+  //   // Fetch initial session
+  //   const fetchSession = async () => {
+  //     const { data: { session } } = await supabase.auth.getSession();
+  //     setSession(session);
+  //   };
+  //   fetchSession();
 
-    // Fetch initial session
-    const fetchSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setSession(session);
-    };
-    fetchSession();
-
-    return () => subscription.unsubscribe();
-  }, []);
+  //   return () => subscription.unsubscribe();
+  // }, []);
 
 
   
@@ -94,7 +82,7 @@ export default function Header(){
 
               <div className="flex gap-4 items-end absolute md:right-6 right-14">
                 <div className="flex gap-2">
-                  {session ? (
+                  {isAuthenticated ? (
                     <Button size="sm" variant={"default"} aria-label="Logout" onClick={handleLogout}>
                       Logout
                     </Button>
