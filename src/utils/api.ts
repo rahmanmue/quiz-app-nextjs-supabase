@@ -65,6 +65,7 @@ export async function logout() {
             return {ok: false, error: result.error }
         }
 
+        localStorage.clear();
         return {ok:true, data: result}
 
     } catch (error) {

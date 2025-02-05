@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { getSupabaseCookies } from "./cookies";
 
 export const createClient = async () => {
   const cookieStore = await cookies();
@@ -26,9 +27,6 @@ export const createClient = async () => {
             });
           } catch (error) {
             console.error(error)
-            // The `set` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing
-            // user sessions.
           }
         },
       },
@@ -39,22 +37,27 @@ export const createClient = async () => {
 
 export const clearAuthCookies = () => {
   const cookieStore = cookies();
+  const cookieNames = getSupabaseCookies();
 
   try {
     // Hapus cookies yang terkait dengan session Supabase
-    cookieStore.set("supabase-auth-token", "", {
+    cookieStore.set({
+      name: cookieNames.accessToken,
+      value: "",
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
-      maxAge: -1, // Menghapus cookies
+      maxAge: 0, // Menghapus cookies
     });
-    cookieStore.set("supabase-refresh-token", "", {
+    cookieStore.set({
+      name: cookieNames.refreshToken,
+      value: "",
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
-      maxAge: -1, // Menghapus cookies
+      maxAge:0, // Menghapus cookies
     });
     
   } catch (error) {
