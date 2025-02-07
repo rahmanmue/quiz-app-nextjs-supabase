@@ -29,7 +29,7 @@ export async function PATCH(request: NextRequest, {params}: {params : {id: strin
     try {
         const updatedData = await request.json()
 
-        const { data, error } = await supabase
+        const { error } = await supabase
             .from('quizzes')
             .update(updatedData)
             .eq('id', params.id)

@@ -27,7 +27,7 @@ export async function GET(){
 export async function POST(request: NextRequest) {
     const supabase = await createClient();   
     try {
-        const {title, userId, questions} = await request.json() as any;
+        const {title, userId, questions} = await request.json();
        
         const {data: quizData, error: quizError} = await supabase
             .from("quizzes")
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
 
             const questionId = questionData[0].id;
 
-            const formatted_choices = choices.map(({choice_text, is_correct}: any) => ({question_id : questionId, choice_text, is_correct}))
+            const formatted_choices = choices.map(({choice_text, is_correct}: {choice_text: string, is_correct: boolean}) => ({question_id : questionId, choice_text, is_correct}))
             
             const { error: choicesError } = await supabase
                 .from("choices")
@@ -79,27 +79,27 @@ export async function POST(request: NextRequest) {
 
 
 
-   // const dataDummy = {
-    //     "title": "quiz A",
-    //     "questions" : [
-    //         {
-    //             "question_text" : "5 x 5 = ",
-    //             "choices" : [
-    //                 {"choice_text": "25", "is_correct" : true},
-    //                 {"choice_text": "28", "is_correct" : false},
-    //                 {"choice_text": "27", "is_correct" : false},
-    //                 {"choice_text": "20", "is_correct" : false}
-    //             ],
-    //         },
-    //         {
-    //             "question_text" : "5 + 5 = ",
-    //             "choices" : [
-    //                 {"choice_text": "10", "is_correct" : true},
-    //                 {"choice_text": "28", "is_correct" : false},
-    //                 {"choice_text": "27", "is_correct" : false},
-    //                 {"choice_text": "20", "is_correct" : false}
-    //             ],
-    //         },
+//    const dataDummy = {
+//         "title": "quiz A",
+//         "questions" : [
+//             {
+//                 "question_text" : "5 x 5 = ",
+//                 "choices" : [
+//                     {"choice_text": "25", "is_correct" : true},
+//                     {"choice_text": "28", "is_correct" : false},
+//                     {"choice_text": "27", "is_correct" : false},
+//                     {"choice_text": "20", "is_correct" : false}
+//                 ],
+//             },
+//             {
+//                 "question_text" : "5 + 5 = ",
+//                 "choices" : [
+//                     {"choice_text": "10", "is_correct" : true},
+//                     {"choice_text": "28", "is_correct" : false},
+//                     {"choice_text": "27", "is_correct" : false},
+//                     {"choice_text": "20", "is_correct" : false}
+//                 ],
+//             },
 
-    //     ]
-    // }
+//         ]
+//     }
